@@ -1,66 +1,351 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Store Management API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 1. ERD
+Add your ERD diagram here.
 
-## About Laravel
+## 2. API Documentation
+- Base URL: `/api`
+- Auth: JWT Bearer (`Authorization: Bearer <token>`)
+- Success envelope (unless noted):
+```json
+{
+  "success": true,
+  "message": "OK",
+  "data": {},
+  "meta": {}
+}
+```
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Auth
+- **POST `/auth/login`**  
+  Body:
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "secret123"
+  }
+  ```
+  Success 200:
+  ```json
+  {
+    "success": true,
+    "message": "OK",
+    "data": {
+      "access_token": "...",
+      "token_type": "bearer",
+      "expires_in": 3600
+    }
+  }
+  ```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **GET `/auth`** (me, bearer required)  
+  Success 200:
+  ```json
+  {
+    "success": true,
+    "message": "OK",
+    "data": {
+      "id": 1,
+      "name": "User",
+      "email": "user@example.com",
+      "is_active": true,
+      "role": "ADMIN",
+      "store": {"id": 3, "name": "Main Store", "level": "PUSAT"},
+      "last_login_at": "2024-01-01T00:00:00Z"
+    }
+  }
+  ```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **POST `/auth/logout`** (bearer required)  
+  Success 200:
+  ```json
+  {
+    "message": "Successfully logged out"
+  }
+  ```
 
-## Learning Laravel
+- **POST `/auth/auth/refresh`** (bearer required)  
+  Success 200:
+  ```json
+  {
+    "success": true,
+    "message": "OK",
+    "data": {
+      "access_token": "...",
+      "token_type": "bearer",
+      "expires_in": 3600
+    }
+  }
+  ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **POST `/auth/update-profile`** (bearer required)  
+  Body (any combination):
+  ```json
+  {
+    "name": "New Name",
+    "email": "new@example.com",
+    "password": "newpass",
+    "password_confirmation": "newpass"
+  }
+  ```
+  Success 200: same user payload as `/auth`.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Super Admin (`/super-admin`, role SUPER_ADMIN, bearer required)
+- **GET `/stores`**  
+  Query (optional): `per_page`, `q`, `level`, `parent_store_id`  
+  Success 200:
+  ```json
+  {
+    "success": true,
+    "message": "OK",
+    "data": [],
+    "meta": {
+      "pagination": {}
+    }
+  }
+  ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **POST `/stores`**  
+  Body:
+  ```json
+  {
+    "code": "STR-001",
+    "name": "Central",
+    "level": "PUSAT|CABANG|RETAIL",
+    "parent_store_id": null,
+    "address": "Jl. Example",
+    "is_active": true
+  }
+  ```
+  Success 201:
+  ```json
+  {
+    "success": true,
+    "message": "Store created",
+    "data": {
+      "id": 10,
+      "code": "...",
+      "name": "...",
+      "level": "...",
+      "parent_store_id": null,
+      "address": "...",
+      "is_active": true
+    }
+  }
+  ```
 
-## Laravel Sponsors
+- **GET `/stores/{id}`**  
+  Success 200:
+  ```json
+  {
+    "success": true,
+    "message": "Store detail",
+    "data": {}
+  }
+  ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **PUT/PATCH `/stores/{id}`**  
+  Success 200:
+  ```json
+  {
+    "success": true,
+    "message": "Store updated",
+    "data": {}
+  }
+  ```
 
-### Premium Partners
+- **DELETE `/stores/{id}`**  
+  Success 204:
+  ```json
+  {
+    "success": true,
+    "message": "Store soft deleted",
+    "data": null
+  }
+  ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- **GET `/users`**  
+  Query (optional): `per_page`, `q`, `role`, `store_id`  
+  Success 200: pagination envelope with users.
 
-## Contributing
+- **POST `/users`**  
+  Body:
+  ```json
+  {
+    "name": "Admin",
+    "email": "admin@example.com",
+    "password": "secret123",
+    "store_id": 3,
+    "role": "ADMIN|CASHIER",
+    "is_active": true
+  }
+  ```
+  Success 201:
+  ```json
+  {
+    "success": true,
+    "message": "User created",
+    "data": {
+      "id": 20,
+      "name": "...",
+      "email": "...",
+      "is_active": true,
+      "role": {"id": 2, "name": "ADMIN"},
+      "store": {"id": 3, "name": "Central", "level": "PUSAT"}
+    }
+  }
+  ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **GET `/users/{id}`**  
+- **PUT/PATCH `/users/{id}`**  
+- **DELETE `/users/{id}`**  
+  Success 200/204 envelopes match other resources.
 
-## Code of Conduct
+### Admin (`/admin`, role ADMIN, bearer required, `store.scope` enforced)
+- **GET `/cashiers`**  
+  Pagination envelope, only cashiers in scoped store.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- **POST `/cashiers`**  
+  Body:
+  ```json
+  {
+    "name": "Cashier A",
+    "email": "cashier@example.com",
+    "password": "secret123",
+    "is_active": true
+  }
+  ```
+  Success 201:
+  ```json
+  {
+    "success": true,
+    "message": "User created",
+    "data": {
+      "id": 30,
+      "name": "...",
+      "email": "...",
+      "is_active": true,
+      "role": {"name": "CASHIER"},
+      "store": {"id": 1, "name": "...", "level": "..."}
+    }
+  }
+  ```
 
-## Security Vulnerabilities
+- **GET `/cashiers/{id}`**, **PUT/PATCH `/cashiers/{id}`**, **DELETE `/cashiers/{id}`**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- **GET `/products`**  
+  Query (optional): `per_page`, `q`, `is_active`  
+  Success 200: pagination envelope.
 
-## License
+- **POST `/products`**  
+  Body:
+  ```json
+  {
+    "sku": "SKU-001",
+    "name": "Product",
+    "description": "Optional",
+    "price": 10000,
+    "is_active": true
+  }
+  ```
+  Success 201:
+  ```json
+  {
+    "success": true,
+    "message": "Product created",
+    "data": {
+      "id": 40,
+      "store_id": 1,
+      "sku": "...",
+      "name": "...",
+      "description": "...",
+      "price": 10000,
+      "is_active": true
+    }
+  }
+  ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- **GET `/products/{id}`**, **PUT/PATCH `/products/{id}`**, **DELETE `/products/{id}`**
+
+- **GET `/sales`**  
+  Query (optional): `per_page`, `q` (invoice), `status`, `from`, `to`  
+  Success 200: pagination envelope with `cashier` relation.
+
+- **GET `/sales/{id}`**  
+  Success 200:
+  ```json
+  {
+    "success": true,
+    "message": "Sale detail",
+    "data": {
+      "id": 1,
+      "invoice_no": "...",
+      "cashier": {"id": 1, "name": "...", "email": "..."},
+      "items": [],
+      "subtotal": 0,
+      "total": 0
+    }
+  }
+  ```
+
+### Cashier (`/cashier`, role CASHIER or ADMIN, bearer required, `store.scope` enforced)
+- **GET `/products`**  
+- **GET `/products/{id}`**  
+  Success: pagination/detail envelopes identical to admin products.
+
+- **POST `/sales`**  
+  Query (super admin only): `store_id=<int>`  
+  Body:  
+  ```json
+  {
+    "items": [
+      {"product_id": 1, "quantity": 2},
+      {"product_id": 5, "quantity": 1}
+    ],
+    "payment_method": "CASH",
+    "paid_amount": 150000,
+    "discount": 5000,
+    "tax": 1000
+  }
+  ```  
+  Success 201:  
+  ```json
+  {
+    "success": true,
+    "message": "Sale created",
+    "data": {
+      "id": 50,
+      "store_id": <scoped_or_query>,
+      "invoice_no": "INV-<...>",
+      "status": "PAID",
+      "subtotal": 0,
+      "discount": 0,
+      "tax": 0,
+      "total": 0,
+      "paid_amount": 0,
+      "change_amount": 0,
+      "payment_method": "CASH",
+      "paid_at": "2024-01-01T00:00:00Z",
+      "cashier": {"id": 1, "name": "Cashier", "email": "cashier@example.com"},
+      "items": [
+        {"id": 1, "sale_id": 50, "product_id": 1, "product_name_snapshot": "Product", "unit_price": 10000, "quantity": 2, "line_total": 20000}
+      ]
+    }
+  }
+  ```
+
+- **GET `/sales`**  
+  Query (optional): `per_page`, `q`, `status`, `from`, `to`  
+  Success 200: pagination envelope.
+
+- **GET `/sales/{id}`**  
+  Success 200: sale detail envelope.
+
+### Public
+- **GET `/`**  
+  Success 200:
+  ```json
+  {
+    "message": "Welcome to the API"
+  }
+  ```
