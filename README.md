@@ -17,7 +17,7 @@
 ```
 
 ### Auth
-- **POST `/auth/login`**  
+- **POST `/api/auth/login`**  
   Body:
   ```json
   {
@@ -38,7 +38,7 @@
   }
   ```
 
-- **GET `/auth`** (me, bearer required)  
+- **GET `/api/auth`** (me, bearer required)  
   Success 200:
   ```json
   {
@@ -56,7 +56,7 @@
   }
   ```
 
-- **POST `/auth/logout`** (bearer required)  
+- **POST `/api/auth/logout`** (bearer required)  
   Success 200:
   ```json
   {
@@ -64,7 +64,7 @@
   }
   ```
 
-- **POST `/auth/auth/refresh`** (bearer required)  
+- **POST `/api/auth/auth/refresh`** (bearer required)  
   Success 200:
   ```json
   {
@@ -78,7 +78,7 @@
   }
   ```
 
-- **POST `/auth/update-profile`** (bearer required)  
+- **POST `/api/auth/update-profile`** (bearer required)  
   Body (any combination):
   ```json
   {
@@ -91,7 +91,7 @@
   Success 200: same user payload as `/auth`.
 
 ### Super Admin (`/super-admin`, role SUPER_ADMIN, bearer required)
-- **GET `/stores`**  
+- **GET `/api/super-admin/stores`**  
   Query (optional): `per_page`, `q`, `level`, `parent_store_id`  
   Success 200:
   ```json
@@ -105,7 +105,7 @@
   }
   ```
 
-- **POST `/stores`**  
+- **POST `/api/super-admin/stores`**  
   Body:
   ```json
   {
@@ -134,7 +134,7 @@
   }
   ```
 
-- **GET `/stores/{id}`**  
+- **GET `/api/super-admin/stores/{id}`**  
   Success 200:
   ```json
   {
@@ -144,7 +144,7 @@
   }
   ```
 
-- **PUT/PATCH `/stores/{id}`**  
+- **PUT/PATCH `/api/super-admin/stores/{id}`**  
   Success 200:
   ```json
   {
@@ -154,7 +154,7 @@
   }
   ```
 
-- **DELETE `/stores/{id}`**  
+- **DELETE `/api/super-admin/stores/{id}`**  
   Success 204:
   ```json
   {
@@ -164,11 +164,11 @@
   }
   ```
 
-- **GET `/users`**  
+- **GET `/api/super-admin/users`**  
   Query (optional): `per_page`, `q`, `role`, `store_id`  
   Success 200: pagination envelope with users.
 
-- **POST `/users`**  
+- **POST `/api/super-admin/users`**  
   Body:
   ```json
   {
@@ -196,16 +196,16 @@
   }
   ```
 
-- **GET `/users/{id}`**  
-- **PUT/PATCH `/users/{id}`**  
-- **DELETE `/users/{id}`**  
+- **GET `/api/super-admin/users/{id}`**  
+- **PUT/PATCH `/api/super-admin/users/{id}`**  
+- **DELETE `/api/super-admin/users/{id}`**  
   Success 200/204 envelopes match other resources.
 
 ### Admin (`/admin`, role ADMIN, bearer required, `store.scope` enforced)
-- **GET `/cashiers`**  
+- **GET `/api/admin/cashiers`**  
   Pagination envelope, only cashiers in scoped store.
 
-- **POST `/cashiers`**  
+- **POST `/api/admin/cashiers`**  
   Body:
   ```json
   {
@@ -231,13 +231,13 @@
   }
   ```
 
-- **GET `/cashiers/{id}`**, **PUT/PATCH `/cashiers/{id}`**, **DELETE `/cashiers/{id}`**
+- **GET `/api/admin/cashiers/{id}`**, **PUT/PATCH `/api/admin/cashiers/{id}`**, **DELETE `/api/admin/cashiers/{id}`**
 
-- **GET `/products`**  
+- **GET `/api/admin/products`**  
   Query (optional): `per_page`, `q`, `is_active`  
   Success 200: pagination envelope.
 
-- **POST `/products`**  
+- **POST `/api/admin/products`**  
   Body:
   ```json
   {
@@ -265,13 +265,13 @@
   }
   ```
 
-- **GET `/products/{id}`**, **PUT/PATCH `/products/{id}`**, **DELETE `/products/{id}`**
+- **GET `/api/admin/products/{id}`**, **PUT/PATCH `/api/admin/products/{id}`**, **DELETE `/api/admin/products/{id}`**
 
-- **GET `/sales`**  
+- **GET `/api/admin/sales`**  
   Query (optional): `per_page`, `q` (invoice), `status`, `from`, `to`  
   Success 200: pagination envelope with `cashier` relation.
 
-- **GET `/sales/{id}`**  
+- **GET `/api/admin/sales/{id}`**  
   Success 200:
   ```json
   {
@@ -289,11 +289,11 @@
   ```
 
 ### Cashier (`/cashier`, role CASHIER or ADMIN, bearer required, `store.scope` enforced)
-- **GET `/products`**  
-- **GET `/products/{id}`**  
+- **GET `/api/cashier/products`**  
+- **GET `/api/cashier/products/{id}`**  
   Success: pagination/detail envelopes identical to admin products.
 
-- **POST `/sales`**  
+- **POST `/api/cashier/sales`**  
   Query (super admin only): `store_id=<int>`  
   Body:  
   ```json
@@ -334,15 +334,15 @@
   }
   ```
 
-- **GET `/sales`**  
+- **GET `/api/cashier/sales`**  
   Query (optional): `per_page`, `q`, `status`, `from`, `to`  
   Success 200: pagination envelope.
 
-- **GET `/sales/{id}`**  
+- **GET `/api/cashier/sales/{id}`**  
   Success 200: sale detail envelope.
 
 ### Public
-- **GET `/`**  
+- **GET `/api`**  
   Success 200:
   ```json
   {
