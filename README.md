@@ -1,7 +1,7 @@
 # Store Management API
 
 ## 1. ERD
-Add your ERD diagram here.
+![alt text](erd.png)
 
 ## 2. API Documentation
 - Base URL: `/api`
