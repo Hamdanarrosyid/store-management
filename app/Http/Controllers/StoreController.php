@@ -71,9 +71,6 @@ class StoreController extends Controller
         return ApiResponse::success($store, 'Store created', 201);
     }
 
-    /**
-     * GET /api/v1/stores/{id}
-     */
     public function show(int $id)
     {
         $store = Store::query()->findOrFail($id);
@@ -118,12 +115,6 @@ class StoreController extends Controller
         return ApiResponse::success(null, 'Store soft deleted', 204);
     }
 
-    /**
-     * Validasi hirarki level toko.
-     * - PUSAT: parent_store_id wajib NULL
-     * - CABANG: parent_store_id wajib menunjuk PUSAT
-     * - RETAIL: parent_store_id wajib menunjuk CABANG
-     */
     private function validateHierarchy(string $level, ?int $parentStoreId, ?int $selfId = null): void
     {
         if ($level === 'PUSAT') {

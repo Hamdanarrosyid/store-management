@@ -14,9 +14,7 @@ class UserManagementController extends Controller
 {
     private function actor(): User
     {
-        /** @var User $user */
-        $user = auth('api')->user();
-        return $user;
+        return auth('api')->user();
     }
 
     private function allowedTargetRoles(): array
@@ -52,11 +50,7 @@ class UserManagementController extends Controller
         return Role::query()->where('name', $roleName)->value('id');
     }
 
-    /**
-     * GET list users
-     * SUPER_ADMIN: list ADMIN + CASHIER (optionally filter by store_id)
-     * ADMIN: list CASHIER for own store only
-     */
+
     public function index(Request $request)
     {
         $allowed = $this->allowedTargetRoles();
@@ -102,11 +96,7 @@ class UserManagementController extends Controller
         return ApiResponse::pagination($users);
     }
 
-    /**
-     * POST create user
-     * SUPER_ADMIN: can create ADMIN or KASIR, must provide store_id
-     * ADMIN: can create KASIR only, store_id forced from scope
-     */
+
     public function store(Request $request)
     {
         $actor = $this->actor();
@@ -169,9 +159,7 @@ class UserManagementController extends Controller
         return ApiResponse::success($user, 'User created', 201);
     }
 
-    /**
-     * GET user detail
-     */
+
     public function show(Request $request, int $id)
     {
         $allowed = $this->allowedTargetRoles();
@@ -193,11 +181,7 @@ class UserManagementController extends Controller
         return ApiResponse::success($user, 'User detail');
     }
 
-    /**
-     * PATCH update user
-     * SUPER_ADMIN: can update ADMIN/KASIR and can move store_id
-     * ADMIN: can update cashier only within own store, cannot move store_id, cannot change role away from cashier
-     */
+
     public function update(Request $request, int $id)
     {
         $actor = $this->actor();
@@ -268,9 +252,7 @@ class UserManagementController extends Controller
         return ApiResponse::success($user, 'User updated');
     }
 
-    /**
-     * DELETE user
-     */
+
     public function destroy(Request $request, int $id)
     {
         $allowed = $this->allowedTargetRoles();

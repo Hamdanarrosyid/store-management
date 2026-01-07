@@ -1,5 +1,13 @@
 # Store Management API
 
+## 0. Software Specification
+- Runtime: PHP 8.2+
+- Framework: Laravel 11.31
+- Auth: JWT (`tymon/jwt-auth` ^2.2) via `auth:api` guard with role-based access (`SUPER_ADMIN`, `ADMIN`, `CASHIER`)
+- Database: PostgreSQL via Eloquent (`DB_CONNECTION=pgsql`)
+- Deployment target: API-only backend (Base path `/api`)
+- Response shape: Unified JSON envelope (`success`, `message`, `data`)
+
 ## 1. ERD
 ![alt text](erd.png)
 
